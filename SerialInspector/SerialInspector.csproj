@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net472</TargetFramework>
-    <UseWPF>false</UseWPF>
-    <StartupObject>Program</StartupObject>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <StartupObject>SerialInspector.EntryPoint</StartupObject>
   </PropertyGroup>
 
 </Project>
