@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace SerialInspector
 {
@@ -21,6 +22,27 @@ namespace SerialInspector
         {
             (DataContext as IDisposable)?.Dispose();
             DataContext = null;
+        }
+
+        private void ApplyClicked(object sender, RoutedEventArgs e)
+        {
+            if (firstChunkMathTextBox.Text.Contains("%FIRST_CHUNK%"))
+            {
+                firstChunkMathTextBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            }
+            else
+            {
+                MessageBox.Show("First chunk math is missing %FIRST_CHUNK% placeholder!", "Serial Inspector");
+            }
+
+            if (secondChunkMathTextBox.Text.Contains("%SECOND_CHUNK%"))
+            {
+                secondChunkMathTextBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            }
+            else
+            {
+                MessageBox.Show("Second chunk math is missing %SECOND_CHUNK% placeholder!", "Serial Inspector");
+            }
         }
     }
 }

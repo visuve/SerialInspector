@@ -1,7 +1,6 @@
 using SerialInspector.Model;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
@@ -102,18 +101,30 @@ namespace SerialInspector
 
         public ObservableDictionary<string, DataChunk> messages;
 
-         public ObservableDictionary<string, DataChunk> Messages
-         {
-             get
-             {
+        public ObservableDictionary<string, DataChunk> Messages
+        {
+            get
+            {
                 return messages;
-             }
-             private set
-             {
-                 messages = value;
-                 OnPropertyChanged(nameof(Messages));
-             }
-         }
+            }
+            private set
+            {
+                messages = value;
+                OnPropertyChanged(nameof(Messages));
+            }
+        }
+
+        public string FirstChunkMath
+        {
+            get;
+            set;
+        }
+
+        public string SecondChunkMath
+        {
+            get;
+            set;
+        }
 
         private void ReadSerial()
         {
@@ -128,7 +139,7 @@ namespace SerialInspector
                     string line = serialPort.ReadLine();
                     string identifier = line.Substring(0, 8);
                     string chunks = line.Substring(9, 17);
-                    var chunk = new DataChunk(chunks);
+                    var chunk = new DataChunk(chunks, FirstChunkMath, SecondChunkMath);
 
                     // To not block UI
                     var addItem = new Action(() => Messages[identifier] = chunk);
@@ -191,6 +202,9 @@ namespace SerialInspector
             SelectedParity = Parity.None;
             SelectedDataBits = 8;
             SelectedStopBitCount = StopBits.One;
+
+            FirstChunkMath = "%FIRST_CHUNK% / 512";
+            SecondChunkMath = "%SECOND_CHUNK% / 512";
         }
 
         public void Dispose()

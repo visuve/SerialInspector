@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SerialInspector"
         mc:Ignorable="d"
-        Title="SerialInspector" Height="450" Width="800">
+        Title="Serial Inspector" Height="450" Width="800">
     <DockPanel Margin="10">
         <!-- Path & Extension -->
         <Grid DockPanel.Dock="Top" IsEnabled="{Binding AvailablePortsHasValues}">
@@ -18,6 +17,7 @@
                 <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -41,9 +41,13 @@
             <ComboBox Grid.Column="5" Grid.Row="1" SelectedIndex="0" IsEnabled="False">
                 <ComboBoxItem>None</ComboBoxItem>
             </ComboBox>
+
+            <Label Grid.Column="0" Grid.Row="2" Content="Math:" />
+            <TextBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Name="firstChunkMathTextBox" Text="{Binding FirstChunkMath, UpdateSourceTrigger=Explicit}" />
+            <TextBox Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="2" Name="secondChunkMathTextBox" Text="{Binding SecondChunkMath, UpdateSourceTrigger=Explicit}" />
+            <Button Grid.Column="5" Grid.Row="2" Content="Apply Math" Click="ApplyClicked" />
         </Grid>
 
-        <!-- Select All & Delete-->
         <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right">
             <Button Content="Run" Width="100" Command="{Binding Run}" />
         </StackPanel>
