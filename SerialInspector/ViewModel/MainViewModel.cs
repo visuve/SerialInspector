@@ -1,9 +1,11 @@
 using SerialInspector.Model;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -12,17 +14,13 @@ namespace SerialInspector
 {
     internal class MainViewModel : PropertyNotifyBase, IDisposable
     {
+        private Thread serialReaderThread;
         private SerialPort serialPort;
 
         public string[] AvailablePorts
         {
             get;
             private set;
-        }
-
-        public bool AvailablePortsHasValues
-        {
-            get => AvailablePorts?.Length > 0;
         }
 
         public string SelectedPort
@@ -93,11 +91,7 @@ namespace SerialInspector
             set;
         }
 
-        public bool IsRunning
-        {
-            get;
-            private set;
-        }
+        public bool IsRunning => serialPort?.IsOpen == true;
 
         public ObservableDictionary<string, DataChunk> messages;
 
@@ -130,6 +124,8 @@ namespace SerialInspector
         {
             serialPort.Open();
 
+            OnPropertyChanged(nameof(IsRunning));
+
             int errorCount = 0;
 
             while (serialPort.IsOpen && errorCount < 50)
@@ -141,7 +137,6 @@ namespace SerialInspector
                     string chunks = line.Substring(9, 17);
                     var chunk = new DataChunk(chunks, FirstChunkMath, SecondChunkMath);
 
-                    // To not block UI
                     var addItem = new Action(() => Messages[identifier] = chunk);
                     Application.Current?.Dispatcher.Invoke(DispatcherPriority.Background, addItem);
                 }
@@ -164,7 +159,6 @@ namespace SerialInspector
                 {
                     run = new RelayCommand(x =>
                     {
-                        IsRunning = true;
                         Debug.WriteLine(SelectedPort);
                         Debug.WriteLine(SelectedBaudRate);
                         Debug.WriteLine(SelectedParity);
@@ -180,9 +174,10 @@ namespace SerialInspector
                         serialPort.NewLine = "\r\n";
 
                         Messages = new ObservableDictionary<string, DataChunk>();
+                        serialReaderThread = new Thread(ReadSerial);
+                        serialReaderThread.Start();
 
-                        ReadSerial();
-                    }, x => !IsRunning);
+                    }, x => !string.IsNullOrEmpty(SelectedPort) && !IsRunning);
                 }
 
                 return run;
@@ -193,7 +188,7 @@ namespace SerialInspector
         {
             AvailablePorts = SerialPort.GetPortNames();
 
-            if (AvailablePortsHasValues)
+            if (AvailablePorts?.Length > 0)
             {
                 SelectedPort = AvailablePorts.First();
             }
