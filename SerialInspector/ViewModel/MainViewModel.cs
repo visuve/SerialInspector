@@ -1,8 +1,8 @@
 using SerialInspector.Model;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Threading;
@@ -122,10 +122,17 @@ namespace SerialInspector
 
         private void ReadSerial()
         {
-            serialPort.Open();
+            try
+            {
+                serialPort.Open();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Failed to open port: {e.Message}", "SerialInspector");
+                return;
+            }
 
             OnPropertyChanged(nameof(IsRunning));
-
             int errorCount = 0;
 
             while (serialPort.IsOpen && errorCount < 50)
@@ -140,6 +147,11 @@ namespace SerialInspector
                     var addItem = new Action(() => Messages[identifier] = chunk);
                     Application.Current?.Dispatcher.Invoke(DispatcherPriority.Background, addItem);
                 }
+                catch (IOException e)
+                {
+                    MessageBox.Show($"I/O exception occurred: {e.Message}", "SerialInspector");
+                    break;
+                }
                 catch (Exception e)
                 {
                     Debug.WriteLine($"An exception occurred: {e.Message}");
@@ -147,6 +159,9 @@ namespace SerialInspector
                     continue;
                 }
             }
+
+            Dispose();
+            OnPropertyChanged(nameof(IsRunning));
         }
 
         private ICommand run;
@@ -176,7 +191,6 @@ namespace SerialInspector
                         Messages = new ObservableDictionary<string, DataChunk>();
                         serialReaderThread = new Thread(ReadSerial);
                         serialReaderThread.Start();
-
                     }, x => !string.IsNullOrEmpty(SelectedPort) && !IsRunning);
                 }
 
@@ -207,6 +221,7 @@ namespace SerialInspector
             if (serialPort != null)
             {
                 serialPort.Dispose();
+                serialPort = null;
             }
         }
     }
