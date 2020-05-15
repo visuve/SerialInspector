@@ -6,13 +6,13 @@ namespace SerialInspector.Model
 {
     internal class DataChunk
     {
-        public uint First
+        public object First
         {
             get;
             private set;
         }
 
-        public uint Second
+        public object Second
         {
             get;
             private set;
@@ -25,16 +25,16 @@ namespace SerialInspector.Model
             Second = uint.Parse(chunks[1], NumberStyles.HexNumber);
         }
 
-        private uint ComputeMath(string math)
+        private object ComputeMath(string math)
         {
             try
             {
                 object calculus = new DataTable().Compute(math, null);
                 return Convert.ToUInt32(calculus);
             }
-            catch // Intentional exception swallowing
+            catch
             {
-                return 0;
+                return "Error";
             }
         }
 

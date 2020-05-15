@@ -9,7 +9,7 @@ uint8_t fakeData[8] = {
 };
 
 uint32_t fakeIdentifier() {
-  return random(0xDEADBEAA, 0xDEADBEEF);
+  return random(0xDEADBEEA, 0xDEADBEEF);
 }
 
 void setup() {
