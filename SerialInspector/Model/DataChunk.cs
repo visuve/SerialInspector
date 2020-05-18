@@ -30,7 +30,7 @@ namespace SerialInspector.Model
             try
             {
                 object calculus = new DataTable().Compute(math, null);
-                return Convert.ToUInt32(calculus);
+                return Convert.ToDouble(calculus);
             }
             catch
             {
