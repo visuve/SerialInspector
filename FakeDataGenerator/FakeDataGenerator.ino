@@ -4,8 +4,8 @@ const uint32_t MESSAGE_SIZE = 18;
 char buffer[MESSAGE_SIZE] = { 0 };
 
 uint8_t fakeData[8] = {  
-   1, 2, 3, 4,
-   3, 4, 5, 6
+   0x00, 0x00, 0x0A, 0x40,
+   0x00, 0x00, 0x0D, 0xCC
 };
 
 uint32_t fakeIdentifier() {

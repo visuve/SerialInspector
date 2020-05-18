@@ -16,6 +16,7 @@ namespace SerialInspector
     {
         private Thread serialReaderThread;
         private SerialPort serialPort;
+        private bool keepRunning;
 
         public string[] AvailablePorts
         {
@@ -135,7 +136,7 @@ namespace SerialInspector
             OnPropertyChanged(nameof(IsRunning));
             int errorCount = 0;
 
-            while (serialPort.IsOpen && errorCount < 50)
+            while (keepRunning && serialPort.IsOpen && errorCount < 50)
             {
                 try
                 {
@@ -160,7 +161,7 @@ namespace SerialInspector
                 }
             }
 
-            Dispose();
+            serialPort.Close();
             OnPropertyChanged(nameof(IsRunning));
         }
 
@@ -189,6 +190,8 @@ namespace SerialInspector
                         serialPort.NewLine = "\r\n";
 
                         Messages = new ObservableDictionary<string, DataChunk>();
+
+                        keepRunning = true;
                         serialReaderThread = new Thread(ReadSerial);
                         serialReaderThread.Start();
                     }, x => !string.IsNullOrEmpty(SelectedPort) && !IsRunning);
@@ -212,12 +215,19 @@ namespace SerialInspector
             SelectedDataBits = 8;
             SelectedStopBitCount = StopBits.One;
 
-            FirstChunkMath = "%FIRST_CHUNK% / 512";
-            SecondChunkMath = "%SECOND_CHUNK% / 512";
+            FirstChunkMath = "%FIRST_CHUNK% / 256";
+            SecondChunkMath = "%SECOND_CHUNK% / 256";
         }
 
         public void Dispose()
         {
+            keepRunning = false;
+
+            if (serialReaderThread != null)
+            {
+                serialReaderThread.Join(1000); // TODO: this is hacky
+            }
+
             if (serialPort != null)
             {
                 serialPort.Dispose();
