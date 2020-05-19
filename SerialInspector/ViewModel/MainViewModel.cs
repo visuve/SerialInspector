@@ -142,7 +142,7 @@ namespace SerialInspector
                 {
                     string line = serialPort.ReadLine();
                     string identifier = line.Substring(0, 8);
-                    string chunks = line.Substring(9, 17);
+                    string chunks = line.Substring(9, 23);
                     var chunk = new DataChunk(chunks, FirstChunkMath, SecondChunkMath);
 
                     var addItem = new Action(() => Messages[identifier] = chunk);
@@ -161,7 +161,7 @@ namespace SerialInspector
                 }
             }
 
-            serialPort.Close();
+            serialPort?.Close();
             OnPropertyChanged(nameof(IsRunning));
         }
 
@@ -215,8 +215,8 @@ namespace SerialInspector
             SelectedDataBits = 8;
             SelectedStopBitCount = StopBits.One;
 
-            FirstChunkMath = "%FIRST_CHUNK% / 256";
-            SecondChunkMath = "%SECOND_CHUNK% / 256";
+            FirstChunkMath = "$A + $B + $C + $D / 256";
+            SecondChunkMath = "$E + $F + $G + $H / 256";
         }
 
         public void Dispose()

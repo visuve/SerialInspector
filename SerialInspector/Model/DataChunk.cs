@@ -1,18 +1,24 @@
 using System;
 using System.Data;
-using System.Globalization;
+using System.Linq;
 
 namespace SerialInspector.Model
 {
     internal class DataChunk
     {
-        public object First
+        public double FirstChunkSum
         {
             get;
             private set;
         }
 
-        public object Second
+        public double SecondChunkSum
+        {
+            get;
+            private set;
+        }
+
+        public byte[] Bytes
         {
             get;
             private set;
@@ -20,37 +26,39 @@ namespace SerialInspector.Model
 
         internal DataChunk(string raw)
         {
-            string[] chunks = raw.Split('-');
-            First = uint.Parse(chunks[0], NumberStyles.HexNumber);
-            Second = uint.Parse(chunks[1], NumberStyles.HexNumber);
+            Bytes = raw.Split('-').Select(s => Convert.ToByte(s, 16)).ToArray();
+
+            if (Bytes.Length != 8)
+            {
+                Bytes = null;
+                throw new ArgumentException("Amount of chunks inequal to 8");
+            }
         }
 
-        private object ComputeMath(string math)
+        private double ComputeMath(string math)
         {
-            try
-            {
-                object calculus = new DataTable().Compute(math, null);
-                return Convert.ToDouble(calculus);
-            }
-            catch
-            {
-                return "Error";
-            }
+            object calculus = new DataTable().Compute(math, null);
+            return Convert.ToDouble(calculus);
         }
 
-        internal DataChunk(string raw, string firstChunkMath, string secondChunkMath) :
+        internal DataChunk(string raw, string firstChunkFormula, string secondChunkFormula) :
             this(raw)
         {
-            firstChunkMath = firstChunkMath.Replace("%FIRST_CHUNK%", First.ToString());
-            First = ComputeMath(firstChunkMath);
+            var firstChunkMath = firstChunkFormula
+                .Replace("$A", Bytes[0].ToString())
+                .Replace("$B", Bytes[1].ToString())
+                .Replace("$C", Bytes[2].ToString())
+                .Replace("$D", Bytes[3].ToString());
 
-            secondChunkMath = secondChunkMath.Replace("%SECOND_CHUNK%", Second.ToString());
-            Second = ComputeMath(secondChunkMath);
-        }
+            FirstChunkSum = ComputeMath(firstChunkMath);
 
-        public override string ToString()
-        {
-            return $"{First}-{Second}";
+            var secondChunkMath = secondChunkFormula
+                .Replace("$E", Bytes[4].ToString())
+                .Replace("$F", Bytes[5].ToString())
+                .Replace("$G", Bytes[6].ToString())
+                .Replace("$H", Bytes[7].ToString());
+
+            SecondChunkSum = ComputeMath(secondChunkMath);
         }
     }
 }

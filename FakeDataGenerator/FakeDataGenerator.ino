@@ -1,6 +1,6 @@
 
-// DEADBEEF|ABCD-EFGH + null
-const uint32_t MESSAGE_SIZE = 18;
+// DEADBEEF|A-B-C-D-E-F-G-H + null
+const uint32_t MESSAGE_SIZE = 24;
 char buffer[MESSAGE_SIZE] = { 0 };
 
 uint8_t fakeData[8] = {  
@@ -23,7 +23,7 @@ void loop() {
 
   sprintf(
     buffer, 
-    "%08lX|%02X%02X%02X%02X-%02X%02X%02X%02X",
+    "%08lX|%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
     fakeIdentifier(),
     fakeData[0],
     fakeData[1],

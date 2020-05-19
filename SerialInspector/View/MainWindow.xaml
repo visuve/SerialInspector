@@ -71,9 +71,17 @@
         <ListView ItemsSource="{Binding Messages}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Identifier" Width="150" DisplayMemberBinding="{Binding Key}" />
-                    <GridViewColumn Header="First Chunk" Width="300" DisplayMemberBinding="{Binding Value.First}" />
-                    <GridViewColumn Header="Second Chunk" Width="300" DisplayMemberBinding="{Binding Value.Second}" />
+                    <GridViewColumn Header="Identifier" Width="100" DisplayMemberBinding="{Binding Key}" />
+                    <GridViewColumn Header="0" Width="30" DisplayMemberBinding="{Binding Value.Bytes[0]}" />
+                    <GridViewColumn Header="1" Width="30" DisplayMemberBinding="{Binding Value.Bytes[1]}" />
+                    <GridViewColumn Header="2" Width="30" DisplayMemberBinding="{Binding Value.Bytes[2]}" />
+                    <GridViewColumn Header="3" Width="30" DisplayMemberBinding="{Binding Value.Bytes[3]}" />
+                    <GridViewColumn Header="First Chunk Sum" Width="200" DisplayMemberBinding="{Binding Value.FirstChunkSum}" />
+                    <GridViewColumn Header="4" Width="30" DisplayMemberBinding="{Binding Value.Bytes[4]}" />
+                    <GridViewColumn Header="5" Width="30" DisplayMemberBinding="{Binding Value.Bytes[5]}" />
+                    <GridViewColumn Header="6" Width="30" DisplayMemberBinding="{Binding Value.Bytes[6]}" />
+                    <GridViewColumn Header="7" Width="30" DisplayMemberBinding="{Binding Value.Bytes[7]}" />
+                    <GridViewColumn Header="Second Chunk Sum" Width="200" DisplayMemberBinding="{Binding Value.SecondChunkSum}" />
                 </GridView>
             </ListView.View>
         </ListView>
