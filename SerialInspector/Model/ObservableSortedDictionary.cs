@@ -5,34 +5,24 @@ using System.Linq;
 
 namespace SerialInspector.Model
 {
-    public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INotifyCollectionChanged, INotifyPropertyChanged
+    public class ObservableSortedDictionary<TKey, TValue> : SortedDictionary<TKey, TValue>, INotifyCollectionChanged, INotifyPropertyChanged
     {
-        public ObservableDictionary() :
+        public ObservableSortedDictionary() :
             base()
         {
         }
 
-        public ObservableDictionary(int capacity) :
-            base(capacity)
-        {
-        }
-
-        public ObservableDictionary(IEqualityComparer<TKey> comparer) :
-            base(comparer)
-        {
-        }
-
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary) :
+        public ObservableSortedDictionary(IDictionary<TKey, TValue> dictionary) :
             base(dictionary)
         {
         }
 
-        public ObservableDictionary(int capacity, IEqualityComparer<TKey> comparer) :
-            base(capacity, comparer)
+        public ObservableSortedDictionary(IComparer<TKey> comparer) :
+            base(comparer)
         {
         }
 
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer) :
+        public ObservableSortedDictionary(IDictionary<TKey, TValue> dictionary, IComparer<TKey> comparer) :
             base(dictionary, comparer)
         {
         }

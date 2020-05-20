@@ -96,9 +96,9 @@ namespace SerialInspector
 
         public bool IsRunning => serialPort?.IsOpen == true;
 
-        public ObservableDictionary<string, DataChunk> messages;
+        public ObservableSortedDictionary<string, DataChunk> messages;
 
-        public ObservableDictionary<string, DataChunk> Messages
+        public ObservableSortedDictionary<string, DataChunk> Messages
         {
             get
             {
@@ -191,7 +191,7 @@ namespace SerialInspector
                             SelectedStopBitCount);
                         serialPort.NewLine = "\r\n";
 
-                        Messages = new ObservableDictionary<string, DataChunk>();
+                        Messages = new ObservableSortedDictionary<string, DataChunk>();
 
                         keepRunning = true;
                         serialReaderThread = new Thread(ReadSerial);
