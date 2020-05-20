@@ -33,6 +33,7 @@ namespace SerialInspector
         {
             get
             {
+                yield return 110;
                 yield return 300;
                 yield return 600;
                 yield return 1200;
@@ -41,10 +42,11 @@ namespace SerialInspector
                 yield return 9600;
                 yield return 14400;
                 yield return 19200;
-                yield return 28800;
                 yield return 38400;
                 yield return 57600;
                 yield return 115200;
+                yield return 128000;
+                yield return 256000;
             }
         }
 
