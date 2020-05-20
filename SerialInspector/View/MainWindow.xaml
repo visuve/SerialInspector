@@ -10,8 +10,6 @@
         <view:BooleanInverter x:Key="booleanInverter" />
     </Window.Resources>
     <DockPanel Margin="10">
-        <!-- Path & Extension -->
-
         <Grid DockPanel.Dock="Top" IsEnabled="{Binding IsRunning, Converter={StaticResource booleanInverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
@@ -19,6 +17,8 @@
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="50" />
                 <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -45,6 +45,8 @@
             <ComboBox Grid.Column="5" Grid.Row="1" SelectedIndex="0" IsEnabled="False">
                 <ComboBoxItem>None</ComboBoxItem>
             </ComboBox>
+
+            <Button Grid.Column="7" Grid.Row="2" Content="Run" Command="{Binding Run}" />
         </Grid>
 
         <Grid DockPanel.Dock="Top" IsEnabled="{Binding IsRunning}">
@@ -58,32 +60,26 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label Grid.Column="0" Grid.Row="0" Content="Math:" Width="100"/>
+            <Label Grid.Column="0" Grid.Row="0" Content="Math:" Width="100" />
             <TextBox Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Name="firstChunkMathTextBox" Text="{Binding FirstChunkMath, UpdateSourceTrigger=Explicit}" />
             <TextBox Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" Name="secondChunkMathTextBox" Text="{Binding SecondChunkMath, UpdateSourceTrigger=Explicit}" />
             <Button Grid.Column="3" Grid.Row="0" Content="Apply Math" Click="ApplyClicked" />
         </Grid>
 
-        <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-            <Button Content="Run" Width="100" Command="{Binding Run}" />
-        </StackPanel>
-
-        <ListView ItemsSource="{Binding Messages}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Identifier" Width="100" DisplayMemberBinding="{Binding Key}" />
-                    <GridViewColumn Header="0" Width="30" DisplayMemberBinding="{Binding Value.Bytes[0]}" />
-                    <GridViewColumn Header="1" Width="30" DisplayMemberBinding="{Binding Value.Bytes[1]}" />
-                    <GridViewColumn Header="2" Width="30" DisplayMemberBinding="{Binding Value.Bytes[2]}" />
-                    <GridViewColumn Header="3" Width="30" DisplayMemberBinding="{Binding Value.Bytes[3]}" />
-                    <GridViewColumn Header="First Chunk Sum" Width="200" DisplayMemberBinding="{Binding Value.FirstChunkSum}" />
-                    <GridViewColumn Header="4" Width="30" DisplayMemberBinding="{Binding Value.Bytes[4]}" />
-                    <GridViewColumn Header="5" Width="30" DisplayMemberBinding="{Binding Value.Bytes[5]}" />
-                    <GridViewColumn Header="6" Width="30" DisplayMemberBinding="{Binding Value.Bytes[6]}" />
-                    <GridViewColumn Header="7" Width="30" DisplayMemberBinding="{Binding Value.Bytes[7]}" />
-                    <GridViewColumn Header="Second Chunk Sum" Width="200" DisplayMemberBinding="{Binding Value.SecondChunkSum}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <DataGrid ItemsSource="{Binding Messages}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Identifier" Binding="{Binding Key}" Width="100" />
+                <DataGridTextColumn Header="0" Binding="{Binding Value.Bytes[0]}"  Width="*" />
+                <DataGridTextColumn Header="1" Binding="{Binding Value.Bytes[1]}"  Width="*" />
+                <DataGridTextColumn Header="2" Binding="{Binding Value.Bytes[2]}" Width="*" />
+                <DataGridTextColumn Header="3" Binding="{Binding Value.Bytes[3]}" Width="*" />
+                <DataGridTextColumn Header="First Chunk Sum" Binding="{Binding Value.FirstChunkSum}" Width="200" />
+                <DataGridTextColumn Header="4" Binding="{Binding Value.Bytes[4]}" Width="*" />
+                <DataGridTextColumn Header="5" Binding="{Binding Value.Bytes[5]}" Width="*" />
+                <DataGridTextColumn Header="6" Binding="{Binding Value.Bytes[6]}" Width="*" />
+                <DataGridTextColumn Header="7" Binding="{Binding Value.Bytes[7]}" Width="*" />
+                <DataGridTextColumn Header="Second Chunk Sum" Binding="{Binding Value.SecondChunkSum}" Width="200" />
+            </DataGrid.Columns>
+        </DataGrid>
     </DockPanel>
 </Window>
