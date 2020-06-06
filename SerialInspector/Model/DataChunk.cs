@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SerialInspector.Model
 {
-    internal class DataChunk
+    internal class DataChunk : IEquatable<DataChunk>
     {
         public double FirstChunkSum
         {
@@ -39,6 +39,11 @@ namespace SerialInspector.Model
         {
             object calculus = new DataTable().Compute(math, null);
             return Convert.ToDouble(calculus);
+        }
+
+        public bool Equals(DataChunk other)
+        {
+            return Bytes.SequenceEqual(other.Bytes);
         }
 
         internal DataChunk(string raw, string firstChunkFormula, string secondChunkFormula) :

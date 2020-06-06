@@ -8,6 +8,13 @@ uint8_t fakeData[8] = {
    0x00, 0x00, 0x0D, 0xCC
 };
 
+void shuffleFakeData() {
+    fakeData[2] = random(0x9, 0xB);
+    fakeData[3] = random(0x39, 0x41);
+    fakeData[6] = random(0xC, 0xE);
+    fakeData[7] = random(0xCB, 0xCD);
+}
+
 uint32_t fakeIdentifier() {
   return random(0xDEADBEEA, 0xDEADBEEF);
 }
@@ -20,6 +27,8 @@ void setup() {
 void loop() {
   delay(500);
   digitalWrite(LED_BUILTIN, HIGH);
+
+  shuffleFakeData();
 
   sprintf(
     buffer, 

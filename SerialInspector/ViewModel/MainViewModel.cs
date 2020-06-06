@@ -1,6 +1,7 @@
 using SerialInspector.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
@@ -96,9 +97,9 @@ namespace SerialInspector
 
         public bool IsRunning => serialPort?.IsOpen == true;
 
-        public ObservableSortedDictionary<string, DataChunk> messages;
+        public ObservableSet<SerialMessage> messages;
 
-        public ObservableSortedDictionary<string, DataChunk> Messages
+        public ObservableSet<SerialMessage> Messages
         {
             get
             {
@@ -143,11 +144,9 @@ namespace SerialInspector
                 try
                 {
                     string line = serialPort.ReadLine();
-                    string identifier = line.Substring(0, 8);
-                    string chunks = line.Substring(9, 23);
-                    var chunk = new DataChunk(chunks, FirstChunkMath, SecondChunkMath);
+                    SerialMessage message = SerialMessage.Parse(line, FirstChunkMath, SecondChunkMath);
 
-                    var addItem = new Action(() => Messages[identifier] = chunk);
+                    var addItem = new Action(() => messages.Add(message));
                     Application.Current?.Dispatcher.Invoke(DispatcherPriority.Background, addItem);
                 }
                 catch (IOException e)
@@ -191,7 +190,7 @@ namespace SerialInspector
                             SelectedStopBitCount);
                         serialPort.NewLine = "\r\n";
 
-                        Messages = new ObservableSortedDictionary<string, DataChunk>();
+                        Messages = new ObservableSet<SerialMessage>(new SerialMessageSameIdentifier());
 
                         keepRunning = true;
                         serialReaderThread = new Thread(ReadSerial);

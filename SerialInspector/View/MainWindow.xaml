@@ -68,17 +68,17 @@
 
         <DataGrid ItemsSource="{Binding Messages}" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Identifier" Binding="{Binding Key}" Width="100" />
-                <DataGridTextColumn Header="0" Binding="{Binding Value.Bytes[0]}"  Width="*" />
-                <DataGridTextColumn Header="1" Binding="{Binding Value.Bytes[1]}"  Width="*" />
-                <DataGridTextColumn Header="2" Binding="{Binding Value.Bytes[2]}" Width="*" />
-                <DataGridTextColumn Header="3" Binding="{Binding Value.Bytes[3]}" Width="*" />
-                <DataGridTextColumn Header="First Chunk Sum" Binding="{Binding Value.FirstChunkSum}" Width="200" />
-                <DataGridTextColumn Header="4" Binding="{Binding Value.Bytes[4]}" Width="*" />
-                <DataGridTextColumn Header="5" Binding="{Binding Value.Bytes[5]}" Width="*" />
-                <DataGridTextColumn Header="6" Binding="{Binding Value.Bytes[6]}" Width="*" />
-                <DataGridTextColumn Header="7" Binding="{Binding Value.Bytes[7]}" Width="*" />
-                <DataGridTextColumn Header="Second Chunk Sum" Binding="{Binding Value.SecondChunkSum}" Width="200" />
+                <DataGridTextColumn Header="Identifier" Binding="{Binding Identifier}" Width="100" />
+                <DataGridTextColumn Header="0" Binding="{Binding Data.Bytes[0]}"  Width="*" />
+                <DataGridTextColumn Header="1" Binding="{Binding Data.Bytes[1]}"  Width="*" />
+                <DataGridTextColumn Header="2" Binding="{Binding Data.Bytes[2]}" Width="*" />
+                <DataGridTextColumn Header="3" Binding="{Binding Data.Bytes[3]}" Width="*" />
+                <DataGridTextColumn Header="First Chunk Sum" Binding="{Binding Data.FirstChunkSum}" Width="200" />
+                <DataGridTextColumn Header="4" Binding="{Binding Data.Bytes[4]}" Width="*" />
+                <DataGridTextColumn Header="5" Binding="{Binding Data.Bytes[5]}" Width="*" />
+                <DataGridTextColumn Header="6" Binding="{Binding Data.Bytes[6]}" Width="*" />
+                <DataGridTextColumn Header="7" Binding="{Binding Data.Bytes[7]}" Width="*" />
+                <DataGridTextColumn Header="Second Chunk Sum" Binding="{Binding Data.SecondChunkSum}" Width="200" />
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>
