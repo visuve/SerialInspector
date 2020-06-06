@@ -1,7 +1,7 @@
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Linq;
 
 namespace SerialInspector
 {
@@ -25,7 +25,7 @@ namespace SerialInspector
             DataContext = null;
         }
 
-        private void ApplyClicked(object sender, RoutedEventArgs e)
+        private void ApplyMathClicked(object sender, RoutedEventArgs e)
         {
             string[] firstChunkVariables = { "$A", "$B", "$C", "$D" };
 
@@ -47,6 +47,18 @@ namespace SerialInspector
             else
             {
                 MessageBox.Show("Second chunk math has no placeholders!", "Serial Inspector");
+            }
+        }
+
+        private void ApplyFilterClicked(object sender, RoutedEventArgs e)
+        {
+            if (filterTextBox.Text.Length <= 8)
+            {
+                filterTextBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            }
+            else
+            {
+                MessageBox.Show("Filter too long!", "Serial Inspector");
             }
         }
     }

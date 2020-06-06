@@ -7,10 +7,18 @@ namespace SerialInspector
         [STAThread]
         public static int Main(string[] args)
         {
-            using (var app = new App())
+            try
             {
-                app.InitializeComponent();
-                return app.Run();
+                using (var app = new App())
+                {
+                    app.InitializeComponent();
+                    return app.Run();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"An exception occurred: {e.Message}");
+                return e.HResult;
             }
         }
     }

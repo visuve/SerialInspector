@@ -10,23 +10,23 @@ uint8_t fakeData[8] = {
 
 void shuffleFakeData() {
     fakeData[2] = random(0x9, 0xB);
-    fakeData[3] = random(0x39, 0x41);
+    fakeData[3] = random(0x38, 0x42);
     fakeData[6] = random(0xC, 0xE);
-    fakeData[7] = random(0xCB, 0xCD);
+    fakeData[7] = random(0xCA, 0xCE);
 }
 
 uint32_t fakeIdentifier() {
-  return random(0xDEADBEEA, 0xDEADBEEF);
+  return random(0xDEADBEAA, 0xDEADBEFF);
 }
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
-  Serial.begin(9600, SERIAL_8N1);
+  Serial.begin(38400, SERIAL_8N1);
 }
 
 void loop() {
-  delay(500);
   digitalWrite(LED_BUILTIN, HIGH);
+  delay(100);
 
   shuffleFakeData();
 
@@ -45,6 +45,6 @@ void loop() {
 
   Serial.println(buffer);
 
-  delay(500);
   digitalWrite(LED_BUILTIN, LOW);
+  delay(100);
 }

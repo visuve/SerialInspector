@@ -1,13 +1,14 @@
 using SerialInspector.Model;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -112,6 +113,12 @@ namespace SerialInspector
             }
         }
 
+        public ICollectionView MessageViewSource
+        {
+            get;
+            private set;
+        }
+
         public string FirstChunkMath
         {
             get;
@@ -190,7 +197,7 @@ namespace SerialInspector
                             SelectedStopBitCount);
                         serialPort.NewLine = "\r\n";
 
-                        Messages = new ObservableSet<SerialMessage>(new SerialMessageSameIdentifier());
+                        Messages.Clear();
 
                         keepRunning = true;
                         serialReaderThread = new Thread(ReadSerial);
@@ -202,6 +209,41 @@ namespace SerialInspector
             }
         }
 
+        string identifierFilter;
+
+        public string IdentifierFilter
+        {
+            get
+            {
+                return identifierFilter;
+            }
+            set
+            {
+                if (value != identifierFilter)
+                {
+                    identifierFilter = value;
+                    MessageViewSource.Refresh();
+                }
+            }
+        }
+
+        private bool FilterMessages(object serialMessageObject)
+        {
+            if (string.IsNullOrEmpty(IdentifierFilter))
+            {
+                return true;
+            }
+
+            var serialMessage = serialMessageObject as SerialMessage;
+
+            if (serialMessage == null)
+            {
+                throw new ArgumentException("Object is null or not a SerialMessage!");
+            }
+
+            return serialMessage.Identifier.StartsWith(IdentifierFilter);
+        }
+
         internal MainViewModel()
         {
             AvailablePorts = SerialPort.GetPortNames();
@@ -211,13 +253,17 @@ namespace SerialInspector
                 SelectedPort = AvailablePorts.First();
             }
 
-            SelectedBaudRate = 9600;
+            SelectedBaudRate = 38400;
             SelectedParity = Parity.None;
             SelectedDataBits = 8;
             SelectedStopBitCount = StopBits.One;
 
             FirstChunkMath = "$A + $B + $C + $D / 256";
             SecondChunkMath = "$E + $F + $G + $H / 256";
+
+            Messages = new ObservableSet<SerialMessage>(new SerialMessageSameIdentifier());
+            MessageViewSource = CollectionViewSource.GetDefaultView(Messages);
+            MessageViewSource.Filter = FilterMessages;
         }
 
         public void Dispose()
