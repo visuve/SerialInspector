@@ -5,6 +5,7 @@
     <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
     <StartupObject>SerialInspector.EntryPoint</StartupObject>
+    <ApplicationIcon>SerialInspector.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>
