@@ -67,7 +67,7 @@
         </Grid>
 
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Height="25">
-            <Label Content="Filter by ID:" Width="100" />
+            <Label Content="Filter by Identifier:" Width="105" />
             <TextBox Name="filterTextBox" Text="{Binding IdentifierFilter, UpdateSourceTrigger=Explicit}" Width="200" />
             <Button Content="Apply Filter" Click="ApplyFilterClicked" Width="100" />
         </StackPanel>
