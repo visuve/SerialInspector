@@ -1,4 +1,5 @@
 using System;
+using System.Windows;
 
 namespace SerialInspector
 {
@@ -17,7 +18,14 @@ namespace SerialInspector
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"An exception occurred: {e.Message}");
+                MessageBox.Show(
+                    "An exception occurred which Serial Inspector was unable to recover.\n\n" +
+                    $"Exception details: {e.Message}.\n\n" +
+                    "Please restart the application in order to continue.",
+                    "Serial Inspector",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Stop);
+
                 return e.HResult;
             }
         }

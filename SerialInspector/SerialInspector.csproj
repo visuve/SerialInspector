@@ -6,6 +6,15 @@
     <UseWPF>true</UseWPF>
     <StartupObject>SerialInspector.EntryPoint</StartupObject>
     <ApplicationIcon>SerialInspector.ico</ApplicationIcon>
+    <Authors>visuve</Authors>
+    <Product>Serial Inspector</Product>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <Version>0.1.0</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+  </ItemGroup>
 
 </Project>

@@ -1,11 +1,9 @@
 using SerialInspector.Model;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
-using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
@@ -20,81 +18,18 @@ namespace SerialInspector
         private SerialPort serialPort;
         private bool keepRunning;
 
-        public string[] AvailablePorts
+        private static bool Retry()
         {
-            get;
-            private set;
+            return MessageBox.Show(
+                    "No serial devices found. Please check your connections.\n\nRetry?",
+                    "Serial Inspector",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Exclamation) == MessageBoxResult.Yes;
         }
 
-        public string SelectedPort
-        {
-            get; set;
-        }
+        public SerialConnectionOptions Options { get; } = new SerialConnectionOptions(Retry);
 
-        public IEnumerable<int> BaudRates
-        {
-            get
-            {
-                yield return 110;
-                yield return 300;
-                yield return 600;
-                yield return 1200;
-                yield return 2400;
-                yield return 4800;
-                yield return 9600;
-                yield return 14400;
-                yield return 19200;
-                yield return 38400;
-                yield return 57600;
-                yield return 115200;
-                yield return 128000;
-                yield return 256000;
-            }
-        }
-
-        public int SelectedBaudRate
-        {
-            get;
-            set;
-        }
-
-        public IEnumerable<Parity> Parities
-        {
-            get => (Parity[])Enum.GetValues(typeof(Parity));
-        }
-
-        public Parity SelectedParity
-        {
-            get; set;
-        }
-
-        public IEnumerable<int> DataBits
-        {
-            get
-            {
-                yield return 5;
-                yield return 6;
-                yield return 7;
-                yield return 8;
-            }
-        }
-
-        public int SelectedDataBits
-        {
-            get;
-            set;
-        }
-
-        public IEnumerable<StopBits> StopBitCount
-        {
-            get => (StopBits[])Enum.GetValues(typeof(StopBits));
-        }
-
-        public StopBits SelectedStopBitCount
-        {
-            get;
-            set;
-        }
+        public SerialConnectionSettings Settings { get; set; }
 
         public bool IsRunning => serialPort?.IsOpen == true;
 
@@ -139,7 +74,7 @@ namespace SerialInspector
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Failed to open port: {e.Message}", "SerialInspector");
+                MessageBox.Show($"Failed to open port: {e.Message}", "Serial Inspector");
                 return;
             }
 
@@ -158,7 +93,7 @@ namespace SerialInspector
                 }
                 catch (IOException e)
                 {
-                    MessageBox.Show($"I/O exception occurred: {e.Message}", "SerialInspector");
+                    MessageBox.Show($"I/O exception occurred: {e.Message}", "Serial Inspector");
                     break;
                 }
                 catch (Exception e)
@@ -183,18 +118,14 @@ namespace SerialInspector
                 {
                     run = new RelayCommand(x =>
                     {
-                        Debug.WriteLine(SelectedPort);
-                        Debug.WriteLine(SelectedBaudRate);
-                        Debug.WriteLine(SelectedParity);
-                        Debug.WriteLine(SelectedDataBits);
-                        Debug.WriteLine(SelectedStopBitCount);
+                        Debug.WriteLine(Settings);
 
                         serialPort = new SerialPort(
-                            SelectedPort,
-                            SelectedBaudRate,
-                            SelectedParity,
-                            SelectedDataBits,
-                            SelectedStopBitCount);
+                            Settings.Port,
+                            Settings.BaudRate,
+                            Settings.Parity,
+                            Settings.DataBits,
+                            Settings.StopBits);
                         serialPort.NewLine = "\r\n";
 
                         Messages.Clear();
@@ -202,14 +133,14 @@ namespace SerialInspector
                         keepRunning = true;
                         serialReaderThread = new Thread(ReadSerial);
                         serialReaderThread.Start();
-                    }, x => !string.IsNullOrEmpty(SelectedPort) && !IsRunning);
+                    }, x => !string.IsNullOrEmpty(Settings.Port) && !IsRunning);
                 }
 
                 return run;
             }
         }
 
-        string identifierFilter;
+        private string identifierFilter;
 
         public string IdentifierFilter
         {
@@ -246,17 +177,7 @@ namespace SerialInspector
 
         internal MainViewModel()
         {
-            AvailablePorts = SerialPort.GetPortNames();
-
-            if (AvailablePorts?.Length > 0)
-            {
-                SelectedPort = AvailablePorts.First();
-            }
-
-            SelectedBaudRate = 38400;
-            SelectedParity = Parity.None;
-            SelectedDataBits = 8;
-            SelectedStopBitCount = StopBits.One;
+            Settings = SettingsUtility.Get(Options);
 
             FirstChunkMath = "$A + $B + $C + $D / 256";
             SecondChunkMath = "$E + $F + $G + $H / 256";
@@ -269,6 +190,8 @@ namespace SerialInspector
         public void Dispose()
         {
             keepRunning = false;
+
+            SettingsUtility.SaveIfNeeded(Settings);
 
             if (serialReaderThread != null)
             {
