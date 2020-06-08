@@ -10,6 +10,7 @@ namespace SerialInspector
 {
     internal static class SettingsUtility
     {
+        // TODO: move to the calling class
         private static bool settingsLoadedSuccesfully = false;
 
         internal static string SettingsFilePath
@@ -33,7 +34,20 @@ namespace SerialInspector
 
         internal static SerialConnectionSettings Get(in SerialConnectionOptions options)
         {
-            SerialConnectionSettings settings = FromFile(SettingsFilePath);
+            SerialConnectionSettings settings = null;
+
+            try
+            {
+                byte[] fileContent = File.ReadAllBytes(SettingsFilePath);
+                settings = FromBytes(fileContent);
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine($"Settings file: '{SettingsFilePath}' not found.");
+
+                // This is okay, eventually will create a new settings file in "SaveIfNeeded"
+                settingsLoadedSuccesfully = true; 
+            }
 
             if (settings == null)
             {
@@ -43,7 +57,7 @@ namespace SerialInspector
             if (!IsValidSettings(options, settings))
             {
                 MessageBox.Show(
-                    $"Incorrect setting values. Please check: '{SettingsFilePath}'",
+                    $"Incorrect setting values. Please check: '{SettingsFilePath}' for correct values.",
                     "Serial Inspector",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
@@ -55,27 +69,20 @@ namespace SerialInspector
             return settings;
         }
 
-        private static SerialConnectionSettings FromFile(string path)
-        {
-            try
-            {
-                byte[] fileContent = File.ReadAllBytes(path);
-                return FromBytes(fileContent);
-            }
-            catch (FileNotFoundException)
-            {
-                Debug.WriteLine($"Settings file: '{SettingsFilePath}' not found.");
-            }
-
-            return null;
-        }
-
         internal static SerialConnectionSettings FromBytes(in byte[] data)
         {
             try
             {
                 var utf8Reader = new Utf8JsonReader(data);
                 return JsonSerializer.Deserialize<SerialConnectionSettings>(ref utf8Reader);
+            }
+            catch (JsonException e)
+            {
+                MessageBox.Show(
+                    $"Failed to read settings JSON:\n{e.Message}.\n\nPlease check: '{SettingsFilePath}' for correct syntax.",
+                    "Serial Inspector",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
             }
             catch (Exception e)
             {
@@ -84,22 +91,27 @@ namespace SerialInspector
                     "Serial Inspector",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
-
-                return null;
             }
+
+            return null;
         }
 
         internal static void SaveIfNeeded(in SerialConnectionSettings settings)
         {
             if (!settingsLoadedSuccesfully)
             {
-                return;  // This is to prevent overriding by accident
+                // This is to prevent overriding previous settings, which may have had a typo
+                return;
             }
 
             try
             {
-                var data = ToBytes(settings);
-                File.WriteAllBytes(SettingsFilePath, data);
+                byte[] data = ToBytes(settings);
+
+                if (data != null)
+                {
+                    File.WriteAllBytes(SettingsFilePath, data);
+                }
             }
             catch (Exception e)
             {
@@ -113,12 +125,25 @@ namespace SerialInspector
 
         internal static byte[] ToBytes(in SerialConnectionSettings settings, bool indent = true)
         {
-            var options = new JsonSerializerOptions
+            try
             {
-                WriteIndented = indent
-            };
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = indent
+                };
 
-            return JsonSerializer.SerializeToUtf8Bytes(settings, options);
+                return JsonSerializer.SerializeToUtf8Bytes(settings, options);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(
+                    $"Failed to convert settings to JSON:\n{e.Message}.\nPlease file a bug to https://github.com/visuve/SerialInspector",
+                    "Serial Inspector",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+
+            return null;
         }
     }
 }
