@@ -42,9 +42,7 @@
             <ComboBox Grid.Column="5" Grid.Row="0" SelectedIndex="0" ItemsSource="{Binding Options.StopBits}" SelectedValue="{Binding Settings.StopBits}" />
 
             <Label Grid.Column="4" Grid.Row="1" Content="Flow Control" />
-            <ComboBox Grid.Column="5" Grid.Row="1" SelectedIndex="0" IsEnabled="False">
-                <ComboBoxItem>None</ComboBoxItem>
-            </ComboBox>
+            <ComboBox Grid.Column="5" Grid.Row="1" SelectedIndex="0" ItemsSource="{Binding Options.FlowControl}" SelectedValue="{Binding Settings.FlowControl}" />
 
             <Button Grid.Column="7" Grid.Row="1" Content="Run" Command="{Binding Run}" />
         </Grid>

@@ -127,6 +127,8 @@ namespace SerialInspector
                             Settings.Parity,
                             Settings.DataBits,
                             Settings.StopBits);
+
+                        serialPort.Handshake = Settings.FlowControl;
                         serialPort.NewLine = "\r\n";
 
                         Messages.Clear();

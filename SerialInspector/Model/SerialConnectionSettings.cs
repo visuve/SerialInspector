@@ -22,6 +22,9 @@ namespace SerialInspector.Model
         [JsonPropertyName("stop_bits"), Enumeration(typeof(StopBits))]
         public StopBits StopBits { get; set; } = StopBits.One;
 
+        [JsonPropertyName("flow_control"), Enumeration(typeof(Handshake))]
+        public Handshake FlowControl { get; set; } = Handshake.None;
+
         internal void Validate()
         {
             var context = new ValidationContext(this);

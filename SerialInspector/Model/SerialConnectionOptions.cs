@@ -26,6 +26,8 @@ namespace SerialInspector.Model
 
         public static IEnumerable<StopBits> StopBits => (IEnumerable<StopBits>)Enum.GetValues(typeof(StopBits));
 
+        public static IEnumerable<Handshake> FlowControl => (IEnumerable<Handshake>)Enum.GetValues(typeof(Handshake));
+
         // For unit testing
         internal SerialConnectionOptions(string[] ports)
         {
