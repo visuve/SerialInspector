@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
@@ -177,7 +178,12 @@ namespace SerialInspector
 
         internal MainViewModel()
         {
-            Settings = SettingsUtility.Get(Options);
+            Settings = SettingsUtility.Get();
+
+            if (string.IsNullOrEmpty(Settings.Port))
+            {
+                Settings.Port = Options.Ports.FirstOrDefault();
+            }
 
             FirstChunkMath = "$A + $B + $C + $D / 256";
             SecondChunkMath = "$E + $F + $G + $H / 256";
@@ -191,7 +197,7 @@ namespace SerialInspector
         {
             keepRunning = false;
 
-            SettingsUtility.SaveIfNeeded(Settings);
+            SettingsUtility.SaveIfValid(Settings);
 
             if (serialReaderThread != null)
             {

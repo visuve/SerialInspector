@@ -10,6 +10,10 @@
     <Version>0.0.1</Version>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DefineConstants>TRACE;TESTING</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />

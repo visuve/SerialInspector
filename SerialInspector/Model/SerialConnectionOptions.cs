@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
 
 namespace SerialInspector.Model
 {
@@ -13,67 +12,19 @@ namespace SerialInspector.Model
             private set;
         }
 
-        public IEnumerable<int> BaudRates
+        public static IEnumerable<int> BaudRates => new int[]
         {
-            get
-            {
-                yield return 110;
-                yield return 300;
-                yield return 600;
-                yield return 1200;
-                yield return 2400;
-                yield return 4800;
-                yield return 9600;
-                yield return 14400;
-                yield return 19200;
-                yield return 38400;
-                yield return 57600;
-                yield return 115200;
-                yield return 128000;
-                yield return 256000;
-            }
-        }
+            110, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200, 128000, 256000
+        };
 
-        public IEnumerable<Parity> Parities
+        public static IEnumerable<Parity> Parities => (IEnumerable<Parity>)Enum.GetValues(typeof(Parity));
+
+        public static IEnumerable<int> DataBits => new int[]
         {
-            get => (Parity[])Enum.GetValues(typeof(Parity));
-        }
+            5, 6, 7, 8
+        };
 
-        public IEnumerable<int> DataBits
-        {
-            get
-            {
-                yield return 5;
-                yield return 6;
-                yield return 7;
-                yield return 8;
-            }
-        }
-
-        public IEnumerable<StopBits> StopBits
-        {
-            get => (StopBits[])Enum.GetValues(typeof(StopBits));
-        }
-
-        public SerialConnectionSettings Defaults
-        {
-            get
-            {
-                var settings = new SerialConnectionSettings();
-
-                if (Ports?.Length > 0)
-                {
-                    settings.Port = Ports.First();
-                }
-
-                settings.BaudRate = 38400;
-                settings.Parity = Parity.None;
-                settings.DataBits = 8;
-                settings.StopBits = System.IO.Ports.StopBits.One;
-
-                return settings;
-            }
-        }
+        public static IEnumerable<StopBits> StopBits => (IEnumerable<StopBits>)Enum.GetValues(typeof(StopBits));
 
         // For unit testing
         internal SerialConnectionOptions(string[] ports)

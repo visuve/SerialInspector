@@ -16,34 +16,54 @@ namespace SerialInspectorTests
         }
 
         [TestMethod]
-        public void IsValidSettings()
+        public void Defaults()
         {
-            var options = new SerialConnectionOptions(new string[] { "COM1" });
+            var settings = new SerialConnectionSettings();
+            Assert.AreEqual(null, settings.Port);
+            Assert.AreEqual(38400, settings.BaudRate);
+            Assert.AreEqual(Parity.None, settings.Parity);
+            Assert.AreEqual(8, settings.DataBits);
+            Assert.AreEqual(StopBits.One, settings.StopBits);
+        }
 
+        [TestMethod]
+        public void IsValid()
+        {
+            Assert.IsFalse(new SerialConnectionSettings().TryValidate()); // COM port is null
+
+            Assert.IsTrue(new SerialConnectionSettings() 
+            { 
+                Port = "COM1" 
+            }.TryValidate());
+
+            Assert.IsFalse(new SerialConnectionSettings()
             {
-                var settings = new SerialConnectionSettings()
-                {
-                    Port = "COM1",
-                    BaudRate = 38400,
-                    Parity = Parity.None,
-                    DataBits = 8,
-                    StopBits = StopBits.One
-                };
+                Port = "COM0"
+            }.TryValidate());
 
-                Assert.IsTrue(SettingsUtility.IsValidSettings(options, settings));
-            }
+            Assert.IsFalse(new SerialConnectionSettings()
             {
-                var settings = new SerialConnectionSettings()
-                {
-                    Port = "COM1",
-                    BaudRate = 38400,
-                    Parity = Parity.None,
-                    DataBits = -1,
-                    StopBits = StopBits.One
-                };
+                Port = "COM1",
+                BaudRate = 123
+            }.TryValidate());
 
-                Assert.IsFalse(SettingsUtility.IsValidSettings(options, settings));
-            }
+            Assert.IsFalse(new SerialConnectionSettings()
+            {
+                Port = "COM1",
+                Parity = (Parity)5
+            }.TryValidate());
+
+            Assert.IsFalse(new SerialConnectionSettings()
+            {
+                Port = "COM1",
+                DataBits = 9
+            }.TryValidate());
+
+            Assert.IsFalse(new SerialConnectionSettings()
+            {
+                Port = "COM1",
+                StopBits = (StopBits)4
+            }.TryValidate());
         }
 
         [TestMethod]

@@ -1,5 +1,6 @@
 using SerialInspector.Model;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,9 +11,6 @@ namespace SerialInspector
 {
     internal static class SettingsUtility
     {
-        // TODO: move to the calling class
-        private static bool settingsLoadedSuccesfully = false;
-
         internal static string SettingsFilePath
         {
             get
@@ -22,17 +20,7 @@ namespace SerialInspector
             }
         }
 
-        // TODO: implement some sort of error reporting on what went wrong
-        internal static bool IsValidSettings(in SerialConnectionOptions options, in SerialConnectionSettings settings)
-        {
-            return options.Ports.Contains(settings.Port) &&
-                options.BaudRates.Contains(settings.BaudRate) &&
-                options.Parities.Contains(settings.Parity) &&
-                options.DataBits.Contains(settings.DataBits) &&
-                options.StopBits.Contains(settings.StopBits);
-        }
-
-        internal static SerialConnectionSettings Get(in SerialConnectionOptions options)
+        internal static SerialConnectionSettings Get()
         {
             SerialConnectionSettings settings = null;
 
@@ -40,32 +28,33 @@ namespace SerialInspector
             {
                 byte[] fileContent = File.ReadAllBytes(SettingsFilePath);
                 settings = FromBytes(fileContent);
+                Debug.WriteLine($"Settings loaded from: '{SettingsFilePath}'.");
             }
             catch (FileNotFoundException)
             {
                 Debug.WriteLine($"Settings file: '{SettingsFilePath}' not found.");
-
-                // This is okay, eventually will create a new settings file in "SaveIfNeeded"
-                settingsLoadedSuccesfully = true; 
             }
 
             if (settings == null)
             {
-                return options.Defaults;
+                return new SerialConnectionSettings();
             }
 
-            if (!IsValidSettings(options, settings))
+            try
+            {
+                settings.Validate();
+            }
+            catch (ValidationException e)
             {
                 MessageBox.Show(
-                    $"Incorrect setting values. Please check: '{SettingsFilePath}' for correct values.",
+                    $"Incorrect setting values: {e.Message}\n\n Please check: '{SettingsFilePath}' for correct values.",
                     "Serial Inspector",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
 
-                return options.Defaults;
+                return new SerialConnectionSettings();
             }
 
-            settingsLoadedSuccesfully = true;
             return settings;
         }
 
@@ -96,21 +85,21 @@ namespace SerialInspector
             return null;
         }
 
-        internal static void SaveIfNeeded(in SerialConnectionSettings settings)
+        internal static void SaveIfValid(in SerialConnectionSettings settings)
         {
-            if (!settingsLoadedSuccesfully)
-            {
-                // This is to prevent overriding previous settings, which may have had a typo
-                return;
-            }
-
             try
             {
+                if (!settings.TryValidate())
+                {
+                    return; // Prevent saving erraneous values
+                }
+
                 byte[] data = ToBytes(settings);
 
                 if (data != null)
                 {
                     File.WriteAllBytes(SettingsFilePath, data);
+                    Debug.WriteLine($"Settings saved to: '{SettingsFilePath}'.");
                 }
             }
             catch (Exception e)
