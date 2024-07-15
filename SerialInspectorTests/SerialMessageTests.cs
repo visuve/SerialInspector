@@ -31,8 +31,7 @@ namespace SerialInspectorTests
         {
             var a = SerialMessage.Parse("DEADBEEF|01-02-03-04-05-06-07-08");
             var b = SerialMessage.Parse("DEADBEEF|01-02-03-04-05-06-07-08");
-            Assert.IsTrue(a.Equals(b));
-            Assert.AreNotEqual(a, b); // AreEqual does not work, as SerialMessage does not override Object.Equals
+            Assert.AreEqual(a, b);
         }
     }
 }
