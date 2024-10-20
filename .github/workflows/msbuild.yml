@@ -1,0 +1,32 @@
+name: MSBuild
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: microsoft/setup-msbuild@v2
+    - uses: darenm/Setup-VSTest@v1.2
+
+    - name: Restore
+      run: MSBuild.exe -t:Restore SerialInspector.sln
+
+    - name: Build
+      run: |
+        MSBuild.exe SerialInspector.sln /p:Configuration="Debug" /p:Platform="Any CPU" /m
+        MSBuild.exe SerialInspector.sln /p:Configuration="Release" /p:Platform="Any CPU" /m
+    
+    - name: Test
+      run: vstest.console.exe SerialInspectorTests/bin/Debug/net48/SerialInspectorTests.dll
+
+    - name: Publish
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Automatic GitHub build"
+          files: |
+            SerialInspector/bin/Release/net48/*.*
