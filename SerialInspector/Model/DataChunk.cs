@@ -6,6 +6,8 @@ namespace SerialInspector.Model
 {
     internal class DataChunk : IEquatable<DataChunk>
     {
+        private readonly DataTable dataTable = new DataTable();
+
         public double FirstChunkSum
         {
             get;
@@ -37,13 +39,18 @@ namespace SerialInspector.Model
 
         private double ComputeMath(string math)
         {
-            object calculus = new DataTable().Compute(math, null);
+            object calculus = dataTable.Compute(math, null);
             return Convert.ToDouble(calculus);
         }
 
         public bool Equals(DataChunk other)
         {
             return Bytes.SequenceEqual(other.Bytes);
+        }
+
+        public override string ToString()
+        {
+            return BitConverter.ToString(Bytes, 0, 8);
         }
 
         internal DataChunk(string raw, string firstChunkFormula, string secondChunkFormula) :

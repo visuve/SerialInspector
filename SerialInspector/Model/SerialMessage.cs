@@ -5,7 +5,24 @@ namespace SerialInspector.Model
 {
     internal class SerialMessage : IEquatable<SerialMessage>
     {
-        public string Identifier { get; private set; }
+        private string identifier;
+
+        public string Identifier
+        { 
+            get
+            {
+                return identifier;
+            }
+            set
+            {
+                if (value.Length != 8)
+                {
+                    throw new ArgumentException("Identifier must be 8 characters long!");
+                }
+
+                identifier = value;
+            }
+        }
         public DataChunk Data { get; private set; }
 
         internal SerialMessage(string identifier, DataChunk data)
@@ -31,6 +48,10 @@ namespace SerialInspector.Model
         public bool Equals(SerialMessage other)
         {
             return Identifier.Equals(other.Identifier) && Data.Equals(other.Data);
+        }
+        public override string ToString()
+        {
+            return Identifier + '|' + Data.ToString();
         }
     }
 
