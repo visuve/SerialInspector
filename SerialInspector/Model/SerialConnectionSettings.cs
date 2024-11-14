@@ -11,7 +11,7 @@ namespace SerialInspector.Model
         public string Port { get; set; }
 
         [JsonPropertyName("baud_rate"), List(110, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200, 128000, 256000)]
-        public int BaudRate { get; set; } = 38400;
+        public int BaudRate { get; set; } = 115200;
 
         [JsonPropertyName("parity"), Enumeration(typeof(Parity))]
         public Parity Parity { get; set; } = Parity.None;
