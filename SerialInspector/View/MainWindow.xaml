@@ -5,14 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:view="clr-namespace:SerialInspector.View"
         mc:Ignorable="d"
-        Title="Serial Inspector" Height="450" Width="800">
+        Title="Serial Inspector" Height="1000" Width="1000">
     <Window.Resources>
         <view:BooleanInverter x:Key="booleanInverter" />
+        <view:HexConverter x:Key="hexConverter" />
     </Window.Resources>
     <DockPanel Margin="10">
-        <Grid DockPanel.Dock="Top" IsEnabled="{Binding IsRunning, Converter={StaticResource booleanInverter}}">
+        <Grid DockPanel.Dock="Top" IsEnabled="{Binding IsConnected, Converter={StaticResource booleanInverter}}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="110" />
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="100" />
@@ -44,12 +45,12 @@
             <Label Grid.Column="4" Grid.Row="1" Content="Flow Control" />
             <ComboBox Grid.Column="5" Grid.Row="1" SelectedIndex="0" ItemsSource="{Binding Options.FlowControl}" SelectedValue="{Binding Settings.FlowControl}" />
 
-            <Button Grid.Column="7" Grid.Row="1" Content="Run" Command="{Binding Run}" />
+            <Button Grid.Column="7" Grid.Row="1" Content="Connect" Command="{Binding Connect}" />
         </Grid>
 
         <Grid DockPanel.Dock="Top" IsEnabled="{Binding IsRunning}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="110" />
                 <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="100" />
@@ -58,17 +59,56 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label Grid.Column="0" Grid.Row="0" Content="Math:" Width="100" />
+            <Label Grid.Column="0" Grid.Row="0" Content="Math:" />
             <TextBox Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Name="firstChunkMathTextBox" Text="{Binding FirstChunkMath, UpdateSourceTrigger=Explicit}" />
             <TextBox Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" Name="secondChunkMathTextBox" Text="{Binding SecondChunkMath, UpdateSourceTrigger=Explicit}" />
             <Button Grid.Column="3" Grid.Row="0" Content="Apply Math" Click="ApplyMathClicked" />
         </Grid>
 
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Height="25">
-            <Label Content="Filter by Identifier:" Width="105" />
-            <TextBox Name="filterTextBox" Text="{Binding IdentifierFilter, UpdateSourceTrigger=Explicit}" Width="200" />
-            <Button Content="Apply Filter" Click="ApplyFilterClicked" Width="100" />
-        </StackPanel>
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="500" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Filter by Identifier:"/>
+            <TextBox Grid.Column="1" Name="filterTextBox" Text="{Binding IdentifierFilter, UpdateSourceTrigger=Explicit}" />
+            <Button Grid.Column="2" Content="Apply Filter" Click="ApplyFilterClicked" Width="100" />
+        </Grid>
+
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110" />
+                <ColumnDefinition Width="60" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="230" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Send data:" Width="110" />
+
+            <Label Grid.Column="1" Content="Identifier:" Width="75" />
+            <TextBox Grid.Column="2" Text="{Binding UserMessage.Identifier, Converter={StaticResource hexConverter}}" Width="75" />
+
+            <Label Grid.Column="3" Content="Bytes:" />
+            <TextBox Grid.Column="4" Text="{Binding UserMessage.Data.Bytes[0], Converter={StaticResource hexConverter}}" />
+            <TextBox Grid.Column="5" Text="{Binding UserMessage.Data.Bytes[1], Converter={StaticResource hexConverter}}" />
+            <TextBox Grid.Column="6" Text="{Binding UserMessage.Data.Bytes[2], Converter={StaticResource hexConverter}}" />
+            <TextBox Grid.Column="7" Text="{Binding UserMessage.Data.Bytes[3], Converter={StaticResource hexConverter}}" />
+            <TextBox Grid.Column="8" Text="{Binding UserMessage.Data.Bytes[4], Converter={StaticResource hexConverter}}" />
+            <TextBox Grid.Column="9" Text="{Binding UserMessage.Data.Bytes[5], Converter={StaticResource hexConverter}}" />
+            <TextBox Grid.Column="10" Text="{Binding UserMessage.Data.Bytes[6], Converter={StaticResource hexConverter}}" />
+            <TextBox Grid.Column="11" Text="{Binding UserMessage.Data.Bytes[7], Converter={StaticResource hexConverter}}" />
+
+            <Button Grid.Column="12" Content="Send" Command="{Binding Send}" Width="100" />
+        </Grid>
 
         <DataGrid ItemsSource="{Binding MessageViewSource}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False">
             <DataGrid.Columns>

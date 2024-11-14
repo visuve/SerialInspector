@@ -21,18 +21,22 @@ namespace SerialInspector
 
         private static bool Retry()
         {
+#if DEBUG
+            return false;
+#else
             return MessageBox.Show(
                     "No serial devices found. Please check your connections.\n\nRetry?",
                     "Serial Inspector",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Exclamation) == MessageBoxResult.Yes;
+#endif
         }
 
         public SerialConnectionOptions Options { get; } = new SerialConnectionOptions(Retry);
 
         public SerialConnectionSettings Settings { get; set; }
 
-        public bool IsRunning => serialPort?.IsOpen == true;
+        public bool IsConnected => serialPort?.IsOpen == true;
 
         public ObservableSet<SerialMessage> messages;
 
@@ -79,7 +83,7 @@ namespace SerialInspector
                 return;
             }
 
-            OnPropertyChanged(nameof(IsRunning));
+            OnPropertyChanged(nameof(IsConnected));
             int errorCount = 0;
 
             while (keepRunning && serialPort.IsOpen && errorCount < 50)
@@ -106,18 +110,20 @@ namespace SerialInspector
             }
 
             serialPort?.Close();
-            OnPropertyChanged(nameof(IsRunning));
+            OnPropertyChanged(nameof(IsConnected));
         }
 
-        private ICommand run;
+        public SerialMessage UserMessage { get; set; } = SerialMessage.Parse("DEADBEEF|FF-00-11-AA-BB-CC-DD-EE");
 
-        public ICommand Run
+        private ICommand connect;
+
+        public ICommand Connect
         {
             get
             {
-                if (run == null)
+                if (connect == null)
                 {
-                    run = new RelayCommand(x =>
+                    connect = new RelayCommand(x =>
                     {
                         Debug.WriteLine(Settings);
 
@@ -136,10 +142,29 @@ namespace SerialInspector
                         keepRunning = true;
                         serialReaderThread = new Thread(ReadSerial);
                         serialReaderThread.Start();
-                    }, x => !string.IsNullOrEmpty(Settings.Port) && !IsRunning);
+                    }, x => !string.IsNullOrEmpty(Settings.Port) && !IsConnected);
                 }
 
-                return run;
+                return connect;
+            }
+        }
+
+        private ICommand send;
+
+        public ICommand Send
+        {
+            get
+            {
+                if (send == null)
+                {
+                    send = new RelayCommand(x =>
+                    {
+                        Debug.WriteLine(UserMessage.ToString());
+                        serialPort.Write(UserMessage.ToString());
+                    }, x => IsConnected);
+                }
+
+                return send;
             }
         }
 
