@@ -20,7 +20,7 @@ namespace SerialInspectorTests
         {
             var settings = new SerialConnectionSettings();
             Assert.AreEqual(null, settings.Port);
-            Assert.AreEqual(38400, settings.BaudRate);
+            Assert.AreEqual(115200, settings.BaudRate);
             Assert.AreEqual(Parity.None, settings.Parity);
             Assert.AreEqual(8, settings.DataBits);
             Assert.AreEqual(StopBits.One, settings.StopBits);
